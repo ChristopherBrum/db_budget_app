@@ -31,6 +31,37 @@ class DatabasePersistence
       total_transactions: tuple["total_transactions"].to_f }
   end
 
+  def category_overview
+    sql = <<~SQL
+      SELECT c.id,
+             c.name, 
+             c.amount AS total_allocated, 
+             SUM(t.amount) AS total_spent, 
+             (c.amount - SUM(t.amount)) AS remaining
+      FROM categories AS c
+      JOIN transactions AS t
+        ON c.id = t.category_id
+        GROUP BY c.id, c.name, c.amount;
+    SQL
+
+    result = query(sql)
+
+    result.map do |tuple|
+      { id: tuple["id"],
+        name: tuple["name"],
+        total_allocated: tuple["total_allocated"],
+        total_spent: tuple["total_spent"],
+        remaining: tuple["remaining"]}
+      end
+  end
+
+  def total_estimated_expenses
+    sql = "SELECT SUM(amount) FROM categories;"
+
+    result = query(sql)
+    result.first["sum"]
+  end
+
   private
 
   def query(statement, *params)

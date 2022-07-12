@@ -1,2 +1,54 @@
-<h3></h3>
+  <div class="menu-container">
+      <form method="get" action="/budget/add_funds">
+        <button class="btn btn-nav" type="submit">Add/Deduct Funds</button>
+      </form>
 
+      <form method="get" action="/category/new">
+        <button class="btn btn-nav" type="submit">Add Expense Category</button>
+      </form>
+
+      <form method="get" action="/transaction/add">
+        <button class="btn btn-nav" type="submit">Add Transaction</button>
+      </form>
+
+      <form method="post" action="/budget/delete">
+        <button class="btn btn-nav" type="submit">Delete Budget</button>
+      </form>
+  </div>
+
+  <div>
+    <h3>Budget Categories:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="table-head">Amount Allocated</th>
+          <th class="table-head">Amount Spent</th>
+          <th class="table-head">Remaining</th>
+          <th class="table-head categories">Category</th>
+          <th class="table-head buttons"></th>
+          <th class="table-head buttons"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr>
+            <td>$<%= category[:total_allocated] %></td>
+            <td>$<%= category[:total_spent] %></td>
+            <td>$<%= category[:remaining] %></td>
+            <td><%= category[:name] %></td>
+            <td class="buttons">
+              <form method="get" action="/category/<% category[:id] %>">
+                <button class="category-item btn" type="submit">View</button>
+              </form>
+            </td>
+            <td class="buttons">
+              <form method="post" action="/category/<% category[:id] %>/delete">
+                <button class="category-item btn" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses %></h3>
+  </div>

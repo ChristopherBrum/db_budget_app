@@ -13,8 +13,18 @@ end
 
 before do
   @storage = DatabasePersistence.new(logger)
+
+  budget_overview = @storage.budget_overview
+  @budget_name = budget_overview[:name]
+  @current_funds = budget_overview[:current_funds]
+  @estimated_expenses = budget_overview[:estimated_expenses]
+  @total_transactions = budget_overview[:total_transactions]
+  @current_balance = budget_overview[:current_funds] - budget_overview[:total_transactions]
 end
 
 get '/' do
+  @categories = @storage.category_overview
+  @total_estimated_expenses = @storage.total_estimated_expenses
+  
   erb :home
 end
