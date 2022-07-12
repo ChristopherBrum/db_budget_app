@@ -1,6 +1,6 @@
 #bck-grd {
-  height: 100%;
   min-height: 100vh;
+  height: 100%;
   background: rgb(41,39,73);
   background: linear-gradient(320deg, rgba(41,39,73,1) 0%, rgba(243,199,252,1) 35%, rgba(240,240,240,1) 100%);
   font-family: 'Courier New', Courier, monospace;
@@ -22,12 +22,10 @@
   top: 0;
 }
 
-.menu-container {
+.menu {
   display: flex;
-  /* justify-content: center; */
+  justify-content: space-around;
 }
-
-
 
 button.btn {
   margin: 0 .25em;
@@ -38,11 +36,11 @@ button.btn {
   margin-top: .5em;
 }
 
-button.btn-nav {
-  margin-top: 0;
+button.delete {
+  background-color: rgba(249, 157, 123, 0.5);
 }
 
-div {
+div.container {
   margin: 1em;
   padding: 1em;
   border: 2px solid #a25ab6;
@@ -128,4 +126,8 @@ form.login {
   border: 2px solid gray;
   margin: 2em;
   padding: 1em;
+}
+
+footer {
+  height: 200px;
 }

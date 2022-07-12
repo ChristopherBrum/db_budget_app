@@ -1,54 +1,105 @@
-  <div class="menu-container">
-      <form method="get" action="/budget/add_funds">
-        <button class="btn btn-nav" type="submit">Add/Deduct Funds</button>
-      </form>
+<div class="menu container">
+  <form method="get" action="/budget/add_funds">
+    <button class="btn btn-nav" type="submit">Add/Deduct Funds</button>
+  </form>
 
-      <form method="get" action="/category/new">
-        <button class="btn btn-nav" type="submit">Add Expense Category</button>
-      </form>
+  <form method="get" action="/category/new">
+    <button class="btn btn-nav" type="submit">Add Expense Category</button>
+  </form>
 
-      <form method="get" action="/transaction/add">
-        <button class="btn btn-nav" type="submit">Add Transaction</button>
-      </form>
+  <form method="get" action="/transaction/add">
+    <button class="btn btn-nav" type="submit">Add Transaction</button>
+  </form>
 
-      <form method="post" action="/budget/delete">
-        <button class="btn btn-nav" type="submit">Delete Budget</button>
-      </form>
-  </div>
+  <form method="post" action="/budget/delete">
+    <button class="btn btn-nav delete" type="submit">Delete Budget</button>
+  </form>
+</div>
 
-  <div>
-    <h3>Budget Categories:</h3>
-    <table>
-      <thead>
+<div class="container">
+  <h3>Budget Categories:</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="table-head">Category</th>
+        <th class="table-head">Amount Allocated</th>
+        <th class="table-head">Amount Spent</th>
+        <th class="table-head">Remaining in Category</th>
+        <th class="table-head buttons"></th>
+        <th class="table-head buttons"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
         <tr>
-          <th class="table-head">Amount Allocated</th>
-          <th class="table-head">Amount Spent</th>
-          <th class="table-head">Remaining</th>
-          <th class="table-head categories">Category</th>
-          <th class="table-head buttons"></th>
-          <th class="table-head buttons"></th>
+          <td><%= category[:name] %></td>
+          <td>$<%= category[:total_allocated] %></td>
+          <td>$<%= category[:total_spent] %></td>
+          <td>$<%= category[:remaining] %></td>
+          <td class="buttons">
+            <form method="get" action="/category/<% category[:id] %>">
+              <button class="category-item btn" type="submit">View</button>
+            </form>
+          </td>
+          <td class="buttons">
+            <form method="post" action="/category/<% category[:id] %>/delete">
+              <button class="category-item btn" type="submit">Delete</button>
+            </form>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% @categories.each do |category| %>
-          <tr>
-            <td>$<%= category[:total_allocated] %></td>
-            <td>$<%= category[:total_spent] %></td>
-            <td>$<%= category[:remaining] %></td>
-            <td><%= category[:name] %></td>
-            <td class="buttons">
-              <form method="get" action="/category/<% category[:id] %>">
-                <button class="category-item btn" type="submit">View</button>
-              </form>
-            </td>
-            <td class="buttons">
-              <form method="post" action="/category/<% category[:id] %>/delete">
-                <button class="category-item btn" type="submit">Delete</button>
-              </form>
-            </td>
-          </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses %></h3>
+</div>
+
+<div class="container">
+  <form method="post" action="/transaction/create">
+    <fieldset>
+      <h3>Add Transaction</h3>
+      <div class="mb-3">
+        <label for="category" class="form-label">Category:</label>
+        <select  class="form-select">
+          <% @categories.each do |category| %>
+            <option value="<%= category[:name] %>"><%= category[:name] %></option>        
         <% end %>
-      </tbody>
-    </table>
-    <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses %></h3>
-  </div>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description:</label>
+        <input type="text" class="form-control" placeholder="i.e. March electric bill">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Transaction Amount:</label>
+        <input type="text" class="form-control" placeholder="i.e. 78.25">
+      </div>
+      <button type="submit" class="btn">Add Transaction</button>
+    </fieldset>
+  </form>
+</div>
+
+<div class="container">
+  <h3>Transactions:</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="table-head">Amount</th>
+        <th class="table-head categories">Category</th>
+        <th class="table-head categories">Description</th>
+        <th class="table-head categories">Date</th>
+        <th class="table-head categories">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @all_transactions.each do |transaction| %>
+        <tr>
+          <td>$<%= transaction[:amount] %></td>
+          <td><%= transaction[:category_name] %></td>
+          <td><%= transaction[:description] %></td>
+          <td><%= transaction[:date] %></td>
+          <td><%= transaction[:time] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

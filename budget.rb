@@ -24,7 +24,8 @@ end
 
 get '/' do
   @categories = @storage.category_overview
-  @total_estimated_expenses = @storage.total_estimated_expenses
+  @total_estimated_expenses = @storage.expenses_total
+  @all_transactions = @storage.all_transactions
   
   erb :home
 end
