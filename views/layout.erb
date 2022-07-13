@@ -14,12 +14,12 @@
       <h5>Estimated Monthly Expenses: $<%= @estimated_expenses %></h5>
       <h5>Transactions Total: $<%= @total_transactions %></h5>
 
-      <% if @current_funds > 0 %>
-        <h3 class="bal green">Current Balance: <strong>$<%= @current_balance %></strong></h3>
-      <% elsif @current_funds < 0   %>
-        <h3 class="bal red">Current Balance: $<strong><%= @current_balance %></strong></h3>
+      <% if @balance > 0 %>
+        <h3 class="bal green">Current Balance: <strong>$<%= @balance %></strong></h3>
+      <% elsif @balance < 0   %>
+        <h3 class="bal red">Current Balance: $<strong><%= @balance %></strong></h3>
       <% else %>
-        <h3 class="bal">Current Balance: $<strong><%= @current_balance %></strong></h3>
+        <h3 class="bal">Current Balance: $<strong><%= @balance %></strong></h3>
       <% end %>
 
       <form method="get" action="/">

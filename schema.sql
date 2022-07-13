@@ -19,10 +19,17 @@ CREATE TABLE transactions (
   date timestamp DEFAULT now()
 );
 
+CREATE TABLE deposits (
+  id serial PRIMARY KEY,
+  budget_id integer NOT NULL REFERENCES budgets (id),
+  amount numeric(12,2) NOT NULL DEFAULT 0.00,
+  date_time timestamp DEFAULT now()
+);
+
 -- Insert statements if some dummy data is needed
 
 -- INSERT INTO budgets (name, balance) 
---      VALUES ('My Budget', 2400);
+--      VALUES ('My Budget');
 
 -- INSERT INTO categories (budget_id, name, amount) 
 --      VALUES (1, 'Utilities', 200), 

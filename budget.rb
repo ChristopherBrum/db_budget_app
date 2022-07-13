@@ -19,8 +19,18 @@ before do
   @current_funds = budget_overview[:current_funds]
   @estimated_expenses = budget_overview[:estimated_expenses]
   @total_transactions = budget_overview[:total_transactions]
-  @current_balance = budget_overview[:current_funds] - budget_overview[:total_transactions]
+  @balance = (budget_overview[:current_funds] - budget_overview[:total_transactions]).round(2)
 end
+
+# HELPERS
+
+helpers do
+  def determine_deposit_type(amount)
+    amount.positive? ? "Deposit" : "Withrawl"
+  end
+end
+
+# ROUTES
 
 get '/' do
   @categories = @storage.category_overview
@@ -28,4 +38,31 @@ get '/' do
   @all_transactions = @storage.all_transactions
   
   erb :home
+end
+
+get '/budget' do
+  redirect '/'
+end
+
+get '/budget/add_funds' do
+  @deposits = @storage.all_deposits
+
+  erb :add_funds
+end
+
+post '/budget/add_funds' do
+  deposit_amount = params[:deposit_amount].to_f
+
+  if deposit_amount.positive?
+    @storage.add_funds(deposit_amount)
+    session[:message] = "You've successfully added funds."
+    redirect '/'
+  elsif deposit_amount.negative?
+    @storage.add_funds(deposit_amount)
+    session[:message] = "You've successfully deducted funds."
+    redirect '/'
+  else
+    session[:message] = 'You must enter a positive or negative number.'
+    erb :add_funds
+  end
 end

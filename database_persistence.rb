@@ -85,6 +85,31 @@ class DatabasePersistence
     end
   end
 
+  def all_deposits
+    sql = <<~SQL
+      SELECT amount, 
+             TO_CHAR(date_time :: DATE, 'dd/mm/yyyy') AS date,
+             TO_CHAR(date_time :: TIME, 'HH24:MI:SS') AS time
+        FROM deposits;
+    SQL
+    
+    result = query(sql)
+    result.map do |tuple|
+      { amount: tuple["amount"].to_f,
+        date: tuple["date"],
+        time: tuple["time"] }
+    end
+  end
+
+  def add_funds(deposit_amount)
+    update_balance_sql = "UPDATE budgets SET balance=balance + $1"
+    add_deposit_sql = "INSERT INTO deposits (budget_id, amount) VALUES ($1, $2);"
+
+    # will need to update how the budget id is determined!!!!
+    query(update_balance_sql, deposit_amount)
+    query(add_deposit_sql, 1, deposit_amount)
+  end
+
   private
 
   def query(statement, *params)

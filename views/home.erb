@@ -54,24 +54,36 @@
 </div>
 
 <div class="container">
+  <h3>Add Transaction</h3>
   <form method="post" action="/transaction/create">
-    <fieldset>
-      <h3>Add Transaction</h3>
-      <div class="mb-3">
-        <label for="category" class="form-label">Category:</label>
-        <select  class="form-select">
+  <fieldset>
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        <label for="inputPassword6" class="col-form-label">Category:</label>
+      </div>
+      <div class="col-auto">
+        <select class="form-select">
           <% @categories.each do |category| %>
             <option value="<%= category[:name] %>"><%= category[:name] %></option>        
-        <% end %>
+          <% end %>
         </select>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Description:</label>
-        <input type="text" class="form-control" placeholder="i.e. March electric bill">
+    </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Description:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control" placeholder="i.e. electric bill">
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Transaction Amount:</label>
-        <input type="text" class="form-control" placeholder="i.e. 78.25">
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Amount:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control" placeholder="i.e. 78.25">
+        </div>
       </div>
       <button type="submit" class="btn">Add Transaction</button>
     </fieldset>
