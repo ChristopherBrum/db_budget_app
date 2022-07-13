@@ -55,6 +55,17 @@ class DatabasePersistence
     end
   end
 
+  def add_category(category_name, category_amount)
+    sql = <<~SQL
+      INSERT INTO categories
+        (budget_id, name, amount)
+      VALUES 
+        ($1, $2, $3);
+    SQL
+
+    result = query(sql, category_id, category_name, category_amount)
+  end
+
   def expenses_total
     sql = "SELECT SUM(amount) FROM categories;"
 
@@ -101,13 +112,35 @@ class DatabasePersistence
     end
   end
 
-  def add_funds(deposit_amount)
-    update_balance_sql = "UPDATE budgets SET balance=balance + $1"
+  def add_deposit(deposit_amount)
+    update_balance_sql = "UPDATE budgets SET balance=balance + $1 WHERE id = $2"
     add_deposit_sql = "INSERT INTO deposits (budget_id, amount) VALUES ($1, $2);"
 
+    budget_id = 1
     # will need to update how the budget id is determined!!!!
-    query(update_balance_sql, deposit_amount)
-    query(add_deposit_sql, 1, deposit_amount)
+    query(update_balance_sql, deposit_amount, budget_id)
+    query(add_deposit_sql, budget_id, deposit_amount)
+  end
+
+  def delete_budget
+    sql = "DELETE FROM budgets WHERE id = $1;"
+    budget_id = 1
+    query(sql, budget_id)
+  end
+
+  def delete_deposit_history
+    delete_history_sql = "DELETE FROM deposits WHERE budget_id = $1;"
+    reset_balance_sql = "UPDATE budgets SET balance = 0.0 WHERE id = $1;"
+
+    budget_id = 1
+    # will need to update how the budget id is determined!!!!
+    query(delete_history_sql, budget_id)
+    query(reset_balance_sql, budget_id)
+  end
+
+  def delete_category(category_id)
+    sql = "DELETE FROM categories WHERE id = $1"
+    query(sql, category_id)
   end
 
   private

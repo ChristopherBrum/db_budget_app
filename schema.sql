@@ -1,19 +1,19 @@
 CREATE TABLE budgets (
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id serial PRIMARY KEY,
   name text NOT NULL UNIQUE,
   balance numeric(12,2) NOT NULL
 );
 
 CREATE TABLE categories (
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id serial PRIMARY KEY,
   budget_id integer NOT NULL REFERENCES budgets (id) ON DELETE CASCADE,
   name text NOT NULL UNIQUE,
   amount numeric(12,2) NOT NULL
 );
 
 CREATE TABLE transactions (
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  category_id integer NOT NULL REFERENCES categories (id),
+  id serial PRIMARY KEY,
+  category_id integer NOT NULL REFERENCES categories (id) ON DELETE CASCADE,
   description text NOT NULL DEFAULT '',
   amount numeric(12,2) NOT NULL DEFAULT 0.00,
   date timestamp DEFAULT now()
@@ -23,7 +23,7 @@ CREATE TABLE deposits (
   id serial PRIMARY KEY,
   budget_id integer NOT NULL REFERENCES budgets (id),
   amount numeric(12,2) NOT NULL DEFAULT 0.00,
-  date_time timestamp DEFAULT now()
+  date_time timestamp NOT NULL DEFAULT now()
 );
 
 -- Insert statements if some dummy data is needed

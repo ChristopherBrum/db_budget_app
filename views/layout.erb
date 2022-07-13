@@ -10,16 +10,17 @@
   <body id="bck-grd">
     <div class="container">
       <h1><%= @budget_name %></h2>
-      <h5>Current Funds: $<%= @current_funds %></h5>
-      <h5>Estimated Monthly Expenses: $<%= @estimated_expenses %></h5>
-      <h5>Transactions Total: $<%= @total_transactions %></h5>
+      <h5>Monthly Expenses: $<%= @estimated_expenses %></h5>
+      <h5>Funds Deposited: $<%= @current_funds %></h5>
+      <h5>Total Spent: $<%= @total_transactions %></h5>
+      <h5>Funds Available: $<%= @current_balance %></h5>
 
-      <% if @balance > 0 %>
-        <h3 class="bal green">Current Balance: <strong>$<%= @balance %></strong></h3>
-      <% elsif @balance < 0   %>
-        <h3 class="bal red">Current Balance: $<strong><%= @balance %></strong></h3>
+      <% if @budget_balance > 0 %>
+        <h3 class="bal green">Budgeted Balance: <strong>$<%= @budget_balance %></strong></h3>
+      <% elsif @budget_balance < 0   %>
+        <h3 class="bal red">Budgeted Balance: $<strong><%= @budget_balance %></strong></h3>
       <% else %>
-        <h3 class="bal">Current Balance: $<strong><%= @balance %></strong></h3>
+        <h3 class="bal">Budgeted Balance: $<strong><%= @budget_balance %></strong></h3>
       <% end %>
 
       <form method="get" action="/">

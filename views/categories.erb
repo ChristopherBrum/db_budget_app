@@ -1,0 +1,62 @@
+<div class="container">
+  <h3>Add Budget Category</h3>
+  <form method="post" action="/categories/add">
+    <fieldset>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Category Name:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" name="category_name" class="form-control" placeholder="i.e. household expenses">
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Category Budget:</label>
+        </div>
+        <div class="col-auto">
+          <input type="float" name="category_amount" class="form-control" placeholder="i.e. 750">
+        </div>
+      </div>
+      <button type="submit" class="btn">Add Budget Category</button>
+    </fieldset>
+  </form>
+</div>
+
+
+<div class="container">
+  <h3>Budget Categories:</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="table-head">Category</th>
+        <th class="table-head">Amount Allocated</th>
+        <th class="table-head">Amount Spent</th>
+        <th class="table-head">Remaining in Category</th>
+        <th class="table-head buttons"></th>
+        <th class="table-head buttons"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
+        <tr>
+          <td><%= category[:name] %></td>
+          <td>$<%= category[:total_allocated] %></td>
+          <td>$<%= category[:total_spent] %></td>
+          <td>$<%= category[:remaining] %></td>
+          <td class="buttons">
+            <form method="get" action="/categories/<% category[:id] %>">
+              <button class="category-item btn" type="submit">View</button>
+            </form>
+          </td>
+          <td class="buttons">
+            <form method="post" action="/categories/<%= category[:id] %>/destroy">
+              <button class="category-item btn" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses %></h3>
+</div>
