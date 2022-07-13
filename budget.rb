@@ -93,7 +93,7 @@ end
 # Add new category
 post '/categories/add' do
   category_name = params[:category_name]
-  category_amount = params[:category_amount]
+  category_amount = params[:category_amount].to_f
 
   @storage.add_category(category_name, category_amount)
 

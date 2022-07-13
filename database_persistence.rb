@@ -39,7 +39,7 @@ class DatabasePersistence
              SUM(t.amount) AS total_spent, 
              (c.amount - SUM(t.amount)) AS remaining
       FROM categories AS c
-      INNER JOIN transactions AS t
+      LEFT JOIN transactions AS t
         ON c.id = t.category_id
         GROUP BY c.id, c.name, c.amount;
     SQL
@@ -51,7 +51,7 @@ class DatabasePersistence
         name: tuple["name"],
         total_allocated: tuple["total_allocated"],
         total_spent: tuple["total_spent"],
-        remaining: tuple["remaining"]}
+        remaining: tuple["remaining"] }
     end
   end
 
@@ -63,6 +63,7 @@ class DatabasePersistence
         ($1, $2, $3);
     SQL
 
+    category_id = 1
     result = query(sql, category_id, category_name, category_amount)
   end
 
