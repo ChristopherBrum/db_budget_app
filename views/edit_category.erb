@@ -5,12 +5,13 @@
   <form method="post" action="/categories/<%= @category[:id] %>/edit">
     <div>
       <label>Category Name: </label>
-      <input name="deposit_amount" type="text" value="<%= @category[:name] %>" required>
+      <input name="category_name" type="text" value="<%= @category[:name] %>" required>
     </div>
     <div>
       <label>Alotted Amount:</label>
-      <input name="deposit_amount" type="float" value="<%= @category[:amount] %>" required>
+      <input name="category_amount" type="float" value="<%= @category[:amount] %>" required>
     </div>
+    <input name="category_id" type="hidden" value="<%= @category[:id] %>">
     <button class="btn" type="submit">Update Category</button>
     <button class="btn delete" type="submit" formaction="/categories/<%= @category[:id] %>/destroy">Delete Category</button>
   </form>

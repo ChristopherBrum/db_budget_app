@@ -79,6 +79,11 @@ class DatabasePersistence
     result = query(sql, category_id, category_name, category_amount)
   end
 
+  def edit_category(id, name, amount)
+    sql = "UPDATE categories SET name = $1, amount = $2 WHERE id = $3;"
+    query(sql, name, amount, id)
+  end
+
   def expenses_total
     sql = "SELECT SUM(amount) FROM categories;"
 

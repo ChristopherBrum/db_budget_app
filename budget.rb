@@ -98,6 +98,12 @@ get '/categories/:category_id/edit' do
 end
 
 post '/categories/:category_id/edit' do
+  category_id = params[:category_id]
+  category_name = params[:category_name]
+  category_amount = params[:category_amount].to_f
+
+  @storage.edit_category(category_id, category_name, category_amount)
+
   redirect '/'
 end
 
