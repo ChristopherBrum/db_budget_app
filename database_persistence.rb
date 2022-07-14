@@ -41,7 +41,8 @@ class DatabasePersistence
       FROM categories AS c
       LEFT JOIN transactions AS t
         ON c.id = t.category_id
-        GROUP BY c.id, c.name, c.amount;
+        GROUP BY c.id, c.name, c.amount
+        ORDER BY c.id ASC;
     SQL
 
     result = query(sql)
@@ -53,6 +54,17 @@ class DatabasePersistence
         total_spent: tuple["total_spent"],
         remaining: tuple["remaining"] }
     end
+  end
+
+  def fetch_category(category_id)
+    sql = "SELECT * FROM categories WHERE id = $1;"
+    result = query(sql, category_id)
+    tuple = result.first
+
+    { id: tuple["id"].to_i,
+      budget_id: tuple["budget_id"].to_i,
+      name: tuple["name"],
+      amount: tuple["amount"].to_f }
   end
 
   def add_category(category_name, category_amount)

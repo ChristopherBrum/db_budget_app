@@ -1,0 +1,17 @@
+<p><%= @category %></p>
+
+<div class="container">
+  <h3>Edit Category:</h3>
+  <form method="post" action="/categories/<%= @category[:id] %>/edit">
+    <div>
+      <label>Category Name: </label>
+      <input name="deposit_amount" type="text" value="<%= @category[:name] %>" required>
+    </div>
+    <div>
+      <label>Alotted Amount:</label>
+      <input name="deposit_amount" type="float" value="<%= @category[:amount] %>" required>
+    </div>
+    <button class="btn" type="submit">Update Category</button>
+    <button class="btn delete" type="submit" formaction="/categories/<%= @category[:id] %>/destroy">Delete Category</button>
+  </form>
+</div>

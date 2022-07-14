@@ -90,6 +90,17 @@ get '/categories' do
   erb :categories
 end
 
+# Load individual category edit page
+get '/categories/:category_id/edit' do
+  category_id = params[:category_id]
+  @category = @storage.fetch_category(category_id)
+  erb :edit_category
+end
+
+post '/categories/:category_id/edit' do
+  redirect '/'
+end
+
 # Add new category
 post '/categories/add' do
   category_name = params[:category_name]
