@@ -98,10 +98,10 @@ class DatabasePersistence
              TO_CHAR(t.date :: DATE, 'dd/mm/yyyy') AS date, 
              TO_CHAR(date :: TIME, 'HH24:MI:SS') AS time, 
              c.name
-      FROM categories AS c
-      JOIN transactions AS t
-        ON c.id = t.category_id
-    ORDER BY date DESC;
+        FROM categories AS c
+        JOIN transactions AS t
+          ON c.id = t.category_id
+        ORDER BY date DESC, time DESC;
     SQL
     result = query(sql)
 
@@ -111,6 +111,31 @@ class DatabasePersistence
         date: tuple["date"],
         time: tuple["time"],
         category_name: tuple["name"] }
+    end
+  end
+
+  def fetch_category_transactions(cat_id)
+    sql = <<~SQL
+      SELECT id, 
+             category_id,
+             amount, 
+             description, 
+             TO_CHAR(date :: DATE, 'dd/mm/yyyy') AS date, 
+             TO_CHAR(date :: TIME, 'HH24:MI:SS') AS time
+        FROM transactions
+        WHERE category_id = $1
+        ORDER BY date DESC, time DESC;
+    SQL
+
+    result = query(sql, cat_id)
+
+    result.map do |tuple|
+      { id: tuple["id"],
+        category_id: tuple["category_id"],
+        description: tuple["description"],
+        amount: tuple["amount"],        
+        date: tuple["date"],
+        time: tuple["time"] }
     end
   end
 

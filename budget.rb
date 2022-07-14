@@ -90,13 +90,16 @@ get '/categories' do
   erb :categories
 end
 
-# Load individual category edit page
-get '/categories/:category_id/edit' do
-  category_id = params[:category_id]
+# Load individual category page
+get '/categories/:category_id' do
+  category_id = params[:category_id].to_i
   @category = @storage.fetch_category(category_id)
-  erb :edit_category
+  @transactions = @storage.fetch_category_transactions(category_id)
+
+  erb :category
 end
 
+# Update individual category
 post '/categories/:category_id/edit' do
   category_id = params[:category_id]
   category_name = params[:category_name]
