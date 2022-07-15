@@ -12,20 +12,20 @@ class DatabasePersistence
 
   def budget_overview
     sql = <<~SQL
-      SELECT b.name, 
+      SELECT b.title, 
              b.balance, 
              SUM(c.amount) AS estimated_expenses, 
              SUM(t.amount) AS total_transactions
         FROM budgets AS b
         INNER JOIN categories AS c ON b.id = c.budget_id
         INNER JOIN transactions AS t ON c.id = t.category_id
-        GROUP BY b.name, b.balance;
+        GROUP BY b.title, b.balance;
     SQL
 
     result = query(sql)
     tuple = result.first
 
-    { name: tuple["name"], 
+    { name: tuple["title"], 
       current_funds: tuple["balance"].to_f, 
       estimated_expenses: tuple["estimated_expenses"].to_f,
       total_transactions: tuple["total_transactions"].to_f }
@@ -196,7 +196,19 @@ class DatabasePersistence
     query(sql, category_id, description, amount)
   end
 
+  def create_new_user(username, password, budget_title)
+    query("INSERT INTO users (username, password) VALUES ($1, $2);", username, password)
+    result = query("SELECT * FROM users WHERE username LIKE $1", username)
+    user_id = result.first["id"].to_i
+    create_new_budget(user_id, budget_title)
+  end
+
   private
+
+  def create_new_budget(user_id, title)
+    sql = "INSERT INTO budgets (user_id, title) VALUES ($1, $2);"
+    query(sql, user_id, title)
+  end
 
   def query(statement, *params)
     @logger.info "\n\n-->params: #{params}\n\n-->statement: \n#{statement}" 

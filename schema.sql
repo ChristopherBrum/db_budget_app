@@ -1,7 +1,21 @@
+DROP TABLE transactions;
+DROP TABLE categories;
+DROP TABLE deposits;
+DROP TABLE budgets;
+DROP TABLE users;
+
+CREATE TABLE users (
+  id serial PRIMARY KEY,
+  username varchar(24) NOT NULL UNIQUE,
+  password varchar(50) NOT NULL UNIQUE,
+  date_time timestamp DEFAULT now()
+);
+
 CREATE TABLE budgets (
   id serial PRIMARY KEY,
-  name text NOT NULL UNIQUE,
-  balance numeric(12,2) NOT NULL
+  user_id integer NOT NULL UNIQUE REFERENCES users (id) ON DELETE CASCADE,
+  title text NOT NULL UNIQUE,
+  balance numeric(12,2) NOT NULL DEFAULT 0.0
 );
 
 CREATE TABLE categories (
@@ -21,10 +35,11 @@ CREATE TABLE transactions (
 
 CREATE TABLE deposits (
   id serial PRIMARY KEY,
-  budget_id integer NOT NULL REFERENCES budgets (id),
+  budget_id integer NOT NULL REFERENCES budgets (id) ON DELETE CASCADE,
   amount numeric(12,2) NOT NULL DEFAULT 0.00,
   date_time timestamp NOT NULL DEFAULT now()
 );
+
 
 -- Insert statements if some dummy data is needed
 
@@ -45,14 +60,3 @@ CREATE TABLE deposits (
 --             (3, 'netflix subscription', 7.99),
 --             (3, 'grammarly subscription', 14.99),
 --             (3, 'car insurance premium', 72.41);
-
-SELECT c.id,
-       c.name, 
-       c.amount AS total_allocated, 
-       SUM(t.amount) AS total_spent, 
-       (c.amount - SUM(t.amount)) AS remaining
-FROM categories AS c
-LEFT JOIN transactions AS t
-  ON c.id = t.category_id
-  GROUP BY c.id, c.name, c.amount
-  ORDER BY c.id ASC;

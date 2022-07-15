@@ -14,13 +14,15 @@ end
 before do
   @storage = DatabasePersistence.new(logger)
 
-  budget_overview = @storage.budget_overview
-  @budget_name = budget_overview[:name]
-  @current_funds = budget_overview[:current_funds]
-  @estimated_expenses = budget_overview[:estimated_expenses]
-  @total_transactions = budget_overview[:total_transactions]
-  @current_balance = (@current_funds - @total_transactions).round(2)
-  @budget_balance = (@current_funds - @estimated_expenses).round(2)
+  if session[:username]
+    budget_overview = @storage.budget_overview
+    @budget_name = budget_overview[:title]
+    @current_funds = budget_overview[:current_funds]
+    @estimated_expenses = budget_overview[:estimated_expenses]
+    @total_transactions = budget_overview[:total_transactions]
+    @current_balance = (@current_funds - @total_transactions).round(2)
+    @budget_balance = (@current_funds - @estimated_expenses).round(2)
+  end
 end
 
 # HELPERS
@@ -32,6 +34,31 @@ helpers do
 end
 
 # ROUTES
+
+# Sign In page
+post '/users/sign_in' do
+  username = params[:username]
+  password = params[:password]
+  retyped_password = params[:retyped_password]
+
+  
+
+  redirect '/'
+end
+
+post '/users/sign_up' do
+  username = params[:username]
+  budget_title = params[:budget_title]
+  password = params[:password]
+  retyped_password = params[:retyped_password]
+
+  if password == retyped_password
+    @storage.create_new_user(username, password, budget_title)
+    params[:username] = username
+  end
+
+  redirect '/'
+end
 
 # BUDGET
 # Load budget home page

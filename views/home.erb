@@ -16,7 +16,7 @@
     <tbody>
       <% @categories.each do |category| %>
         <tr>
-          <td><%= category[:name] %></td>
+          <td><%= category[:title] %></td>
           <td>$<%= category[:total_allocated] %></td>
           <td>$<%= category[:total_spent] %></td>
           <td>$<%= category[:remaining] %></td>
@@ -40,20 +40,20 @@
 <div class="container">
   <h3>Add Transaction</h3>
   <form method="post" action="/transactions/add">
-  <fieldset>
-    <div class="row g-3 align-items-center">
-      <div class="col-auto">
-        <label class="col-form-label">Category:</label>
+    <fieldset>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Category:</label>
+        </div>
+        <div class="col-auto">
+          <select name="category_id" class="form-select" required>
+            <option value="">--Please choose an option--</option>
+            <% @categories.each do |category| %>
+              <option type="text" value="<%= category[:id] %>" ><%= category[:name] %></option>        
+            <% end %>
+          </select>
+        </div>
       </div>
-      <div class="col-auto">
-        <select name="category_id" class="form-select" required>
-          <option value="">--Please choose an option--</option>
-          <% @categories.each do |category| %>
-            <option type="text" value="<%= category[:id] %>" ><%= category[:name] %></option>        
-          <% end %>
-        </select>
-      </div>
-    </div>
       <div class="row g-3 align-items-center">
         <div class="col-auto">
           <label class="col-form-label">Description:</label>

@@ -1,11 +1,11 @@
 #bck-grd {
-  min-height: 100vh;
-  height: 100%;
   background: rgb(41,39,73);
   background: linear-gradient(320deg, rgba(41,39,73,1) 0%, rgba(243,199,252,1) 35%, rgba(240,240,240,1) 100%);
   font-family: 'Courier New', Courier, monospace;
   margin: auto;
   width: 1000px;
+  /* min-height: 100vh;
+  height: 100%; */
 }
 
 .message-active {
@@ -47,6 +47,27 @@ div.container {
   box-shadow: 2px 2px 7px 1px #969696;
   border-radius: 5px;
   background-color: #f4f2f2;
+}
+
+div.sign-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  margin-top: 25%;
+}
+
+div.inner-sign-in {
+  display: flex;
+  justify-content: space-between;
+}
+
+form.sign-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2.5em;
 }
 
 label {
@@ -131,4 +152,9 @@ form.login {
 
 footer {
   height: 160px;
+  display: flex;
+}
+
+.trademark {
+  margin: auto;
 }
