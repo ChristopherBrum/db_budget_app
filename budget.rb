@@ -33,7 +33,8 @@ end
 
 # ROUTES
 
-# Load home page
+# BUDGET
+# Load budget home page
 get '/' do
   @categories = @storage.category_overview
   @total_estimated_expenses = @storage.expenses_total
@@ -42,35 +43,32 @@ get '/' do
   erb :home
 end
 
-get '/budget' do
-  redirect '/'
-end
-
 # Delete budget
-post '/budget/destroy' do
+post '/destroy' do
   @storage.delete_budget
   redirect '/'
 end
 
+# DEPOSITS
 # Load deposits page
-get '/budget/deposits' do
+get '/deposits' do
   @deposits = @storage.all_deposits
 
   erb :deposits
 end
 
 # Add/deduct funds from balance
-post '/budget/deposits/add' do
+post '/deposits/add' do
   deposit_amount = params[:deposit_amount].to_f
 
   if deposit_amount.positive?
     @storage.add_deposit(deposit_amount)
     session[:message] = "You've successfully added funds."
-    redirect '/budget/deposits'
+    redirect '/deposits'
   elsif deposit_amount.negative?
     @storage.add_deposit(deposit_amount)
     session[:message] = "You've successfully deducted funds."
-    redirect '/budget/deposits'
+    redirect '/deposits'
   else
     session[:message] = 'You must enter a positive or negative number.'
     erb :deposits
@@ -78,11 +76,12 @@ post '/budget/deposits/add' do
 end
 
 # Delete deposit history and reset balance to 0
-post '/budget/deposits/delete_history' do
+post '/deposits/delete_history' do
   @storage.delete_deposit_history
-  redirect '/budget/deposits'
+  redirect '/deposits'
 end
 
+# CATEGORIES
 # Load categories page
 get '/categories' do
   @categories = @storage.category_overview
@@ -94,7 +93,7 @@ end
 get '/categories/:category_id' do
   category_id = params[:category_id].to_i
   @category = @storage.fetch_category(category_id)
-  @transactions = @storage.fetch_category_transactions(category_id)
+  @category_transactions = @storage.fetch_category_transactions(category_id)
 
   erb :category
 end
@@ -125,4 +124,23 @@ post '/categories/:category_id/destroy' do
   category_id = params[:category_id]
   @storage.delete_category(category_id)
   redirect '/categories'
+end
+
+# TRANSACTIONS
+# Load transactions page
+get '/transactions' do 
+  @categories = @storage.category_overview
+  @all_transactions = @storage.all_transactions
+  
+  erb :transactions
+end
+
+# Add new transaction
+post '/transactions/add' do
+  description = params[:description]
+  amount = params[:amount].to_f
+  category_id = params[:category_id].to_i
+  @storage.add_transaction(category_id, description, amount)
+
+  redirect '/'
 end

@@ -1,0 +1,63 @@
+<div class="container">
+  <h3>Add Transaction</h3>
+  <form method="post" action="/transactions/add">
+    <fieldset>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Category:</label>
+        </div>
+        <div class="col-auto">
+          <select name="category_id" class="form-select" required>
+            <option value="">--Please choose an option--</option>
+            <% @categories.each do |category| %>
+              <option type="text" value="<%= category[:id] %>"><%= category[:name] %></option>        
+            <% end %>
+          </select>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Description:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" name="description" class="form-control" placeholder="i.e. electric bill" required>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Amount:</label>
+        </div>
+        <div class="col-auto">
+          <input type="float" name="amount" class="form-control" placeholder="i.e. 78.25" required>
+        </div>
+      </div>
+      <button type="submit" class="btn">Add Transaction</button>
+    </fieldset>
+  </form>
+</div>
+
+<div class="container">
+  <h3>Transactions:</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="table-head">Amount</th>
+        <th class="table-head categories">Category</th>
+        <th class="table-head categories">Description</th>
+        <th class="table-head categories">Date</th>
+        <th class="table-head categories">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @all_transactions.each do |transaction| %>
+        <tr>
+          <td>$<%= transaction[:amount] %></td>
+          <td><%= transaction[:category_name] %></td>
+          <td><%= transaction[:description] %></td>
+          <td><%= transaction[:date] %></td>
+          <td><%= transaction[:time] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

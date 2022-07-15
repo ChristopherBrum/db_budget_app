@@ -1,20 +1,4 @@
-<div class="menu container">
-  <form method="get" action="/budget/deposits">
-    <button class="btn btn-nav" type="submit">Add/Deduct Funds</button>
-  </form>
 
-  <form method="get" action="/categories">
-    <button class="btn btn-nav" type="submit">Add Expense Category</button>
-  </form>
-
-  <form method="get" action="/transaction/add">
-    <button class="btn btn-nav" type="submit">Add Transaction</button>
-  </form>
-
-  <form method="post" action="/budget/destroy">
-    <button class="btn btn-nav delete" type="submit" onclick="return confirm('Are you sure you want to do this?')">Delete Budget</button>
-  </form>
-</div>
 
 <div class="container">
   <h3>Budget Categories:</h3>
@@ -55,34 +39,35 @@
 
 <div class="container">
   <h3>Add Transaction</h3>
-  <form method="post" action="/transaction/create">
+  <form method="post" action="/transactions/add">
   <fieldset>
     <div class="row g-3 align-items-center">
       <div class="col-auto">
-        <label for="inputPassword6" class="col-form-label">Category:</label>
+        <label class="col-form-label">Category:</label>
       </div>
       <div class="col-auto">
-        <select class="form-select">
+        <select name="category_id" class="form-select" required>
+          <option value="">--Please choose an option--</option>
           <% @categories.each do |category| %>
-            <option value="<%= category[:name] %>"><%= category[:name] %></option>        
+            <option type="text" value="<%= category[:id] %>" ><%= category[:name] %></option>        
           <% end %>
         </select>
       </div>
     </div>
       <div class="row g-3 align-items-center">
         <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">Description:</label>
+          <label class="col-form-label">Description:</label>
         </div>
         <div class="col-auto">
-          <input type="text" class="form-control" placeholder="i.e. electric bill">
+          <input type="text" name="description" class="form-control" placeholder="i.e. electric bill" required>
         </div>
       </div>
       <div class="row g-3 align-items-center">
         <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">Amount:</label>
+          <label class="col-form-label">Amount:</label>
         </div>
         <div class="col-auto">
-          <input type="text" class="form-control" placeholder="i.e. 78.25">
+          <input type="float" name="amount" class="form-control" placeholder="i.e. 78.25" required>
         </div>
       </div>
       <button type="submit" class="btn">Add Transaction</button>

@@ -45,3 +45,14 @@ CREATE TABLE deposits (
 --             (3, 'netflix subscription', 7.99),
 --             (3, 'grammarly subscription', 14.99),
 --             (3, 'car insurance premium', 72.41);
+
+SELECT c.id,
+       c.name, 
+       c.amount AS total_allocated, 
+       SUM(t.amount) AS total_spent, 
+       (c.amount - SUM(t.amount)) AS remaining
+FROM categories AS c
+LEFT JOIN transactions AS t
+  ON c.id = t.category_id
+  GROUP BY c.id, c.name, c.amount
+  ORDER BY c.id ASC;

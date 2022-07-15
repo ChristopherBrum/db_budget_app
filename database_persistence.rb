@@ -95,7 +95,7 @@ class DatabasePersistence
     sql = <<~SQL
       SELECT t.amount, 
              t.description, 
-             TO_CHAR(t.date :: DATE, 'dd/mm/yyyy') AS date, 
+             TO_CHAR(t.date :: DATE, 'mm/dd/yyyy') AS date, 
              TO_CHAR(date :: TIME, 'HH24:MI:SS') AS time, 
              c.name
         FROM categories AS c
@@ -120,7 +120,7 @@ class DatabasePersistence
              category_id,
              amount, 
              description, 
-             TO_CHAR(date :: DATE, 'dd/mm/yyyy') AS date, 
+             TO_CHAR(date :: DATE, 'mm/dd/yyyy') AS date, 
              TO_CHAR(date :: TIME, 'HH24:MI:SS') AS time
         FROM transactions
         WHERE category_id = $1
@@ -142,7 +142,7 @@ class DatabasePersistence
   def all_deposits
     sql = <<~SQL
       SELECT amount, 
-             TO_CHAR(date_time :: DATE, 'dd/mm/yyyy') AS date,
+             TO_CHAR(date_time :: DATE, 'mm/dd/yyyy') AS date,
              TO_CHAR(date_time :: TIME, 'HH24:MI:SS') AS time
         FROM deposits;
     SQL
@@ -186,11 +186,20 @@ class DatabasePersistence
     query(sql, category_id)
   end
 
+  def add_transaction(category_id, description, amount)
+    sql =<<~SQL
+      INSERT INTO transactions 
+        (category_id, description, amount)
+      VALUES ($1, $2, $3);
+    SQL
+    
+    query(sql, category_id, description, amount)
+  end
+
   private
 
   def query(statement, *params)
-    @logger.info "statement: #{statement}"
-    @logger.info "params: #{params}" 
+    @logger.info "\n\n-->params: #{params}\n\n-->statement: \n#{statement}" 
     @db.exec_params(statement, params)
   end
 end

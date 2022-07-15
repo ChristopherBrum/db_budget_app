@@ -27,7 +27,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @transactions.each do |transaction| %>
+      <% @category_transactions.each do |transaction| %>
         <tr>
           <td>$<%= transaction[:amount]%></td> 
           <td><%= transaction[:description]%></td> 
