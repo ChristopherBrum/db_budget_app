@@ -16,9 +16,9 @@
     <tbody>
       <% @categories.each do |category| %>
         <tr>
-          <td><%= category[:title] %></td>
+          <td><%= category[:name] %></td>
           <td>$<%= category[:total_allocated] %></td>
-          <td>$<%= category[:total_spent] %></td>
+          <td class="defalut-value">$<%= category[:total_spent] %></td>
           <td>$<%= category[:remaining] %></td>
           <td class="buttons">
             <form method="get" action="/categories/<%= category[:id] %>">
@@ -34,7 +34,7 @@
       <% end %>
     </tbody>
   </table>
-  <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses %></h3>
+  <h3>Estimated Monthly Expenses: $<%= @total_estimated_expenses ? @total_estimated_expenses : '0.00' %></h3>
 </div>
 
 <div class="container">

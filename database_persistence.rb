@@ -10,42 +10,61 @@ class DatabasePersistence
           end
   end
 
-  def budget_overview
+  def current_budget_id(username)
+    sql = <<~SQL
+      SELECT b.id FROM budgets AS b
+      JOIN users AS u
+        ON u.id = b.user_id
+        WHERE u.username LIKE $1;
+    SQL
+
+    result = query(sql, username)
+    result.first["id"]
+  end
+
+  def budget_overview(budget_id)
     sql = <<~SQL
       SELECT b.title, 
              b.balance, 
              SUM(c.amount) AS estimated_expenses, 
              SUM(t.amount) AS total_transactions
         FROM budgets AS b
-        INNER JOIN categories AS c ON b.id = c.budget_id
-        INNER JOIN transactions AS t ON c.id = t.category_id
-        GROUP BY b.title, b.balance;
+        JOIN categories AS c ON b.id = c.budget_id
+        LEFT JOIN transactions AS t ON c.id = t.category_id
+        GROUP BY b.title, b.balance, b.id
+        HAVING b.id = $1;
     SQL
 
-    result = query(sql)
+    result = query(sql, budget_id)
     tuple = result.first
 
-    { name: tuple["title"], 
-      current_funds: tuple["balance"].to_f, 
-      estimated_expenses: tuple["estimated_expenses"].to_f,
-      total_transactions: tuple["total_transactions"].to_f }
+    if tuple
+      { title: tuple["title"], 
+        current_funds: tuple["balance"].to_f, 
+        estimated_expenses: tuple["estimated_expenses"].to_f,
+        total_transactions: tuple["total_transactions"].to_f }
+    else
+      nil
+    end
   end
 
-  def category_overview
+  def category_overview(budget_id)
     sql = <<~SQL
       SELECT c.id,
-             c.name, 
-             c.amount AS total_allocated, 
-             SUM(t.amount) AS total_spent, 
+             c.name,
+             c.amount AS total_allocated,
+             SUM(t.amount) AS total_spent,
              (c.amount - SUM(t.amount)) AS remaining
       FROM categories AS c
       LEFT JOIN transactions AS t
-        ON c.id = t.category_id
-        GROUP BY c.id, c.name, c.amount
-        ORDER BY c.id ASC;
+      ON c.id = t.category_id
+      JOIN budgets AS b ON b.id = c.budget_id
+      GROUP BY c.id, c.name, c.amount, b.id 
+      HAVING b.id = $1
+      ORDER BY c.id ASC;
     SQL
 
-    result = query(sql)
+    result = query(sql, budget_id)
 
     result.map do |tuple|
       { id: tuple["id"],
@@ -84,14 +103,14 @@ class DatabasePersistence
     query(sql, name, amount, id)
   end
 
-  def expenses_total
-    sql = "SELECT SUM(amount) FROM categories;"
+  def expenses_total(budget_id)
+    sql = "SELECT SUM(amount) FROM categories WHERE budget_id = $1"
 
-    result = query(sql)
+    result = query(sql, budget_id)
     result.first["sum"]
   end
 
-  def all_transactions
+  def all_transactions(budget_id)
     sql = <<~SQL
       SELECT t.amount, 
              t.description, 
@@ -101,9 +120,10 @@ class DatabasePersistence
         FROM categories AS c
         JOIN transactions AS t
           ON c.id = t.category_id
+        WHERE c.budget_id = $1
         ORDER BY date DESC, time DESC;
     SQL
-    result = query(sql)
+    result = query(sql, budget_id)
 
     result.map do |tuple|
       { amount: tuple["amount"],
@@ -139,15 +159,16 @@ class DatabasePersistence
     end
   end
 
-  def all_deposits
+  def all_deposits(budget_id)
     sql = <<~SQL
       SELECT amount, 
              TO_CHAR(date_time :: DATE, 'mm/dd/yyyy') AS date,
              TO_CHAR(date_time :: TIME, 'HH24:MI:SS') AS time
-        FROM deposits;
+        FROM deposits
+        WHERE budget_id = $1;
     SQL
     
-    result = query(sql)
+    result = query(sql, budget_id)
     result.map do |tuple|
       { amount: tuple["amount"].to_f,
         date: tuple["date"],
@@ -155,28 +176,23 @@ class DatabasePersistence
     end
   end
 
-  def add_deposit(deposit_amount)
+  def add_deposit(deposit_amount, budget_id)
     update_balance_sql = "UPDATE budgets SET balance=balance + $1 WHERE id = $2"
     add_deposit_sql = "INSERT INTO deposits (budget_id, amount) VALUES ($1, $2);"
 
-    budget_id = 1
-    # will need to update how the budget id is determined!!!!
     query(update_balance_sql, deposit_amount, budget_id)
     query(add_deposit_sql, budget_id, deposit_amount)
   end
 
-  def delete_budget
+  def delete_budget(budget_id)
     sql = "DELETE FROM budgets WHERE id = $1;"
-    budget_id = 1
     query(sql, budget_id)
   end
 
-  def delete_deposit_history
+  def delete_deposit_history(budget_id)
     delete_history_sql = "DELETE FROM deposits WHERE budget_id = $1;"
     reset_balance_sql = "UPDATE budgets SET balance = 0.0 WHERE id = $1;"
 
-    budget_id = 1
-    # will need to update how the budget id is determined!!!!
     query(delete_history_sql, budget_id)
     query(reset_balance_sql, budget_id)
   end
@@ -203,6 +219,16 @@ class DatabasePersistence
     create_new_budget(user_id, budget_title)
   end
 
+  def fetch_user_credentials(username, password)
+    sql = "SELECT username, password FROM users WHERE username LIKE $1 AND password LIKE $2;"
+    result = query(sql, username, password)
+    
+    tuple = result.first
+      
+    { username: tuple["username"],
+      password: tuple["password"] }
+  end
+
   private
 
   def create_new_budget(user_id, title)
@@ -211,7 +237,7 @@ class DatabasePersistence
   end
 
   def query(statement, *params)
-    @logger.info "\n\n-->params: #{params}\n\n-->statement: \n#{statement}" 
+    @logger.info "\n\n-->params: \n#{params}\n\n-->statement: \n#{statement}\n" 
     @db.exec_params(statement, params)
   end
 end

@@ -36,10 +36,6 @@ button.btn {
   margin-top: .5em;
 }
 
-button.delete {
-  background-color: rgba(249, 157, 123, 0.5);
-}
-
 div.container {
   margin: 1em;
   padding: 1em;
@@ -68,6 +64,10 @@ form.sign-in {
   flex-direction: column;
   align-items: center;
   margin: 2.5em;
+}
+
+#input-div {
+  
 }
 
 label {
@@ -120,6 +120,8 @@ th.table-head.categories {
 th.table-head.buttons, td.buttons {
   width: 50px;
 }
+
+/* td.default-value:empty::before { content: "0" } */
 
 select {
   padding: 5px;

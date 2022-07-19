@@ -10,92 +10,31 @@
   <body id="bck-grd">
 
     <% unless session[:username] %>
-
-      <div class="container sign-in">
-        <h1>Welcome to the Budget App</h1>
-        <div class="inner-sign-in">
-          <form class="sign-in" method="post" action="/users/sign_up">
-            <h3>Sign In</h3>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Username:</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" name="username" class="form-control" required>
-              </div>
-            </div>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Password</label>
-              </div>
-              <div class="col-auto">
-                <input type="password" name="password" class="form-control" required>
-              </div>
-            </div>
-            <button type="submit" class="btn">Sign In</button>
-          </form>
-
-          <form class="sign-in" method="post" action="/users/sign_up">
-          <h3>Sign Up</h3>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Username:</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" name="username" class="form-control" required>
-              </div>
-            </div>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Budget Title:</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" name="budget_title" class="form-control" required>
-              </div>
-            </div>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Password</label>
-              </div>
-              <div class="col-auto">
-                <input type="password" name="password" class="form-control" required>
-              </div>
-            </div>
-            <div class="row g-3 align-items-center">
-              <div class="col-auto">
-                <label class="col-form-label">Retype Password:</label>
-              </div>
-              <div class="col-auto">
-                <input type="password" name="retyped_password" class="form-control" required>
-              </div>
-            </div>
-            <button type="submit" class="btn">Sign In</button>
-          </form>
-        </div>
-      </div>
+      
+      <%= yield %>
 
     <% else %>
 
       <div class="container">
         <h1><%= @budget_name %></h2>
-        <h5>Monthly Expenses: $<%= @estimated_expenses %></h5>
-        <h5>Funds Deposited: $<%= @current_funds %></h5>
-        <h5>Total Spent: $<%= @total_transactions %></h5>
-        <h5>Funds Available: $<%= @current_balance %></h5>
+        <h5>Monthly Expenses: $<%= @estimated_expenses ? @estimated_expenses : '0.00' %></h5>
+        <h5>Funds Deposited: $<%= @current_funds ? @current_funds : '0.00' %></h5>
+        <h5>Total Spent: $<%= @total_transactions  ? @total_transactions : '0.00' %></h5>
+        <h5>Funds Available: $<%= @current_balance ? @current_balance : '0.00' %></h5>
 
         <% if @budget_balance.to_f > 0 %>
-          <h3 class="bal green">Budgeted Balance: <strong>$<%= @budget_balance %></strong></h3>
+          <h3 class="bal green">Budgeted Balance: <strong>$<%= @budget_balance ? @budget_balance : '0.00' %></strong></h3>
         <% elsif @budget_balance.to_f < 0   %>
-          <h3 class="bal red">Budgeted Balance: $<strong><%= @budget_balance %></strong></h3>
+          <h3 class="bal red">Budgeted Balance: $<strong><%= @budget_balance ? @budget_balance : '0.00' %></strong></h3>
         <% else %>
-          <h3 class="bal">Budgeted Balance: $<strong><%= @budget_balance %></strong></h3>
+          <h3 class="bal">Budgeted Balance: $<strong><%= @budget_balance ? @budget_balance : '0.00' %></strong></h3>
         <% end %>
 
         <div class="menu">
           <form method="get" action="/">
-            <button class="btn" type="submit">Home</button>
+            <button class="btn btn-nav" type="submit">Home</button>
           </form>
-          
+
           <form method="get" action="/deposits">
             <button class="btn btn-nav" type="submit">Add/Deduct Funds</button>
           </form>
@@ -108,15 +47,8 @@
             <button class="btn btn-nav" type="submit">Add Transaction</button>
           </form>
 
-          <form method="post" action="/destroy">
-            <button class="btn btn-nav delete" type="submit" onclick="return confirm('Are you sure you want to do this?')">Delete Budget</button>
-          </form>
-
-          <form method="post" action="/users/signout">
-            <p class="user-status">
-              Signed in as <%= session[:username] %>.
-              <button class="btn btn-nav delete" type="submit">Sign Out</button>
-            </p>
+          <form method="post" action="/signout">
+            <button class="btn btn-nav" type="submit">Sign Out as <%= session[:username] %></button>
           </form>
         </div>
       </div>
@@ -124,6 +56,7 @@
       <%= yield %>
 
     <% end %>
+
     <footer>
       <p class="trademark">© 2018 ChristopherBrum</p>
     </footer>

@@ -1,1 +1,65 @@
-<h1>Sign In</h1>
+<div class="container sign-in">
+  <h1>Welcome to the Budget App</h1>
+  <p><%= session %></p>
+  <div class="inner-sign-in">
+    <form class="sign-in" method="post" action="/sign_in">
+      <h3>Sign In</h3>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Username:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" name="username" class="form-control" required>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Password</label>
+        </div>
+        <div class="col-auto">
+          <input type="password" name="password" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn">Sign In</button>
+    </form>
+
+    <form class="sign-in" method="post" action="/sign_up">
+    <h3>Sign Up</h3>
+      <div id="input-div" class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Username:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" name="username" class="form-control" required>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Budget Title:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" name="budget_title" class="form-control" required>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Password</label>
+        </div>
+        <div class="col-auto">
+          <input type="password" name="password" class="form-control" required>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Retype Password:</label>
+        </div>
+        <div class="col-auto">
+          <input type="password" name="retyped_password" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<h5>NOT VALIDATED: <%= session[:username].nil? %></h5> 

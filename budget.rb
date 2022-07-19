@@ -6,6 +6,12 @@ require "logger"
 
 require_relative "database_persistence"
 
+configure do
+  enable :sessions
+  set :session_secret, 'session_secret_for_budget_app'
+  disable :protection
+end
+
 configure(:development) do
   require "sinatra/reloader"
   also_reload "database_persistence.rb"
@@ -15,7 +21,12 @@ before do
   @storage = DatabasePersistence.new(logger)
 
   if session[:username]
-    budget_overview = @storage.budget_overview
+    username = session[:username]
+    @budget_id = @storage.current_budget_id(username)
+    budget_overview = @storage.budget_overview(@budget_id)
+  end
+
+  if budget_overview
     @budget_name = budget_overview[:title]
     @current_funds = budget_overview[:current_funds]
     @estimated_expenses = budget_overview[:estimated_expenses]
@@ -35,18 +46,41 @@ end
 
 # ROUTES
 
-# Sign In page
-post '/users/sign_in' do
+# BUDGET
+# Load budget home page
+get '/' do
+  if session[:username]
+    @categories = @storage.category_overview(@budget_id)
+    @total_estimated_expenses = @storage.expenses_total(@budget_id)
+    @all_transactions = @storage.all_transactions(@budget_id)
+
+    erb :home
+  else 
+    redirect '/sign_in'
+  end
+end
+
+# SIGN IN/UP
+get '/sign_in' do
+
+  erb :sign_in
+end
+
+post '/sign_in' do
   username = params[:username]
   password = params[:password]
-  retyped_password = params[:retyped_password]
+  credentials = @storage.fetch_user_credentials(username, password)
 
-  
+  if credentials[:username] == username &&
+     credentials[:password] == password
+    session[:username] = username
+  end
 
   redirect '/'
 end
 
-post '/users/sign_up' do
+# create new user 
+post '/sign_up' do
   username = params[:username]
   budget_title = params[:budget_title]
   password = params[:password]
@@ -54,32 +88,21 @@ post '/users/sign_up' do
 
   if password == retyped_password
     @storage.create_new_user(username, password, budget_title)
-    params[:username] = username
+    session[:username] = username
   end
 
   redirect '/'
 end
 
-# BUDGET
-# Load budget home page
-get '/' do
-  @categories = @storage.category_overview
-  @total_estimated_expenses = @storage.expenses_total
-  @all_transactions = @storage.all_transactions
-  
-  erb :home
-end
-
-# Delete budget
-post '/destroy' do
-  @storage.delete_budget
+post '/signout' do
+  session[:username] = nil
   redirect '/'
 end
 
 # DEPOSITS
 # Load deposits page
 get '/deposits' do
-  @deposits = @storage.all_deposits
+  @deposits = @storage.all_deposits(@budget_id)
 
   erb :deposits
 end
@@ -89,11 +112,11 @@ post '/deposits/add' do
   deposit_amount = params[:deposit_amount].to_f
 
   if deposit_amount.positive?
-    @storage.add_deposit(deposit_amount)
+    @storage.add_deposit(deposit_amount, @budget_id)
     session[:message] = "You've successfully added funds."
     redirect '/deposits'
   elsif deposit_amount.negative?
-    @storage.add_deposit(deposit_amount)
+    @storage.add_deposit(deposit_amount, @budget_id)
     session[:message] = "You've successfully deducted funds."
     redirect '/deposits'
   else
@@ -104,15 +127,15 @@ end
 
 # Delete deposit history and reset balance to 0
 post '/deposits/delete_history' do
-  @storage.delete_deposit_history
+  @storage.delete_deposit_history(@budget_id)
   redirect '/deposits'
 end
 
 # CATEGORIES
 # Load categories page
 get '/categories' do
-  @categories = @storage.category_overview
-  @total_estimated_expenses = @storage.expenses_total
+  @categories = @storage.category_overview(@budget_id)
+  @total_estimated_expenses = @storage.expenses_total(@budget_id)
   erb :categories
 end
 
@@ -156,8 +179,8 @@ end
 # TRANSACTIONS
 # Load transactions page
 get '/transactions' do 
-  @categories = @storage.category_overview
-  @all_transactions = @storage.all_transactions
+  @categories = @storage.category_overview(@budget_id)
+  @all_transactions = @storage.all_transactions(@budget_id)
   
   erb :transactions
 end
